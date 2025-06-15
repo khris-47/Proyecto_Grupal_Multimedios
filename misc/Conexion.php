@@ -5,10 +5,15 @@
     class Conexion {
 
         public static function conectar(){
-            $host = 'srv863.hstgr.io';
-            $db = 'u484426513_ms125';
-            $user = 'u484426513_ms125';
-            $pass = 'N]18zvue';
+            // $host = 'srv863.hstgr.io';
+            // $db = 'u484426513_ms125';
+            // $user = 'u484426513_ms125';
+            // $pass = 'N]18zvue';
+            // $charset = 'utf8mb4';
+             $host = '127.0.0.1';
+            $db = 'fff';
+            $user = 'root';
+            $pass = 'Cris270814';
             $charset = 'utf8mb4';
 
 

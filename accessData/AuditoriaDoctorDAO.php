@@ -12,7 +12,7 @@ class AuditoriaDoctorDAO {
 
     // Obtener todas las auditorías
     public function obtenerTodos(){
-        $stmt = $this->pdo->query("SELECT * FROM B86781_auditoria_doctores ORDER BY fecha DESC;");
+        $stmt = $this->pdo->query("SELECT * FROM g2_auditoria_doctores ORDER BY fecha DESC;");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -21,6 +21,7 @@ class AuditoriaDoctorDAO {
                 $row['doctor_id'],
                 $row['accion'],
                 $row['realizada_por'],
+                $row['detalle'],       // ← AÑADIDO
                 $row['fecha']
             );
         }
@@ -30,7 +31,7 @@ class AuditoriaDoctorDAO {
 
     // Obtener auditoría por ID
     public function obtenerPorId($id){
-        $stmt = $this->pdo->prepare("SELECT * FROM B86781_auditoria_doctores WHERE id = ?;");
+        $stmt = $this->pdo->prepare("SELECT * FROM g2_auditoria_doctores WHERE id = ?;");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -40,6 +41,7 @@ class AuditoriaDoctorDAO {
                 $row['doctor_id'],
                 $row['accion'],
                 $row['realizada_por'],
+                $row['detalle'],       // ← AÑADIDO
                 $row['fecha']
             );
         }
@@ -47,5 +49,4 @@ class AuditoriaDoctorDAO {
         return null;
     }
 }
-
 ?>

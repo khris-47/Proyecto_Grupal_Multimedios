@@ -15,7 +15,7 @@ class UsuarioDAO
     // Obtener todos los usuarios
     public function obtenerTodos()
     {
-        $stmt = $this->pdo->query("SELECT * FROM B86781_usuarios;");
+        $stmt = $this->pdo->query("SELECT * FROM g2_usuarios;");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -35,7 +35,7 @@ class UsuarioDAO
     // Obtener usuario por ID
     public function obtenerPorId($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM B86781_usuarios WHERE id = ?;");
+        $stmt = $this->pdo->prepare("SELECT * FROM g2_usuarios WHERE id = ?;");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -55,7 +55,7 @@ class UsuarioDAO
     // Insertar nuevo usuario
     public function insertar(Usuario $usuario)
     {
-        $sql = "INSERT INTO B86781_usuarios (cedula, nombre, email, password, id_rol) VALUES (?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO g2_usuarios (cedula, nombre, email, password, id_rol) VALUES (?, ?, ?, ?, ?);";
         $stmt = $this->pdo->prepare($sql);
 
 
@@ -72,7 +72,7 @@ class UsuarioDAO
     // Actualizar usuario
     public function actualizar(Usuario $usuario)
     {
-        $sql = "UPDATE B86781_usuarios SET cedula = ?, nombre = ?, email = ?, password = ?, id_rol = ? WHERE id = ?;";
+        $sql = "UPDATE g2_usuarios SET cedula = ?, nombre = ?, email = ?, password = ?, id_rol = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $usuario->cedula,
@@ -88,13 +88,13 @@ class UsuarioDAO
     // Eliminar usuario
     public function eliminar($id)
     {
-        $stmt = $this->pdo->prepare("DELETE FROM B86781_usuarios WHERE id = ?;");
+        $stmt = $this->pdo->prepare("DELETE FROM g2_usuarios WHERE id = ?;");
         return $stmt->execute([$id]);
     }
 
     public function obtenerPorEmail($email)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM B86781_usuarios WHERE email = ?;");
+        $stmt = $this->pdo->prepare("SELECT * FROM g2_usuarios WHERE email = ?;");
         $stmt->execute([$email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -112,9 +112,6 @@ class UsuarioDAO
     }
 
 }
-
-
-
 
 
 

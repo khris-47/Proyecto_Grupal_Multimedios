@@ -13,7 +13,7 @@ class CitaDAO {
 
     // Obtener todas las citas
     public function obtenerTodos() {
-        $stmt = $this->pdo->query("SELECT * FROM B86781_citas;");
+        $stmt = $this->pdo->query("SELECT * FROM g2_citas;");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -31,7 +31,7 @@ class CitaDAO {
 
     // Obtener una cita por ID
     public function obtenerPorId($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM B86781_citas WHERE id = ?;");
+        $stmt = $this->pdo->prepare("SELECT * FROM g2_citas WHERE id = ?;");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -50,7 +50,7 @@ class CitaDAO {
 
     // Insertar nueva cita
     public function insertar(Cita $objeto) {
-        $sql = "INSERT INTO B86781_citas (paciente_id, doctor_id, fecha, estado) VALUES (?, ?, ?, ?);";
+        $sql = "INSERT INTO g2_citas (paciente_id, doctor_id, fecha, estado) VALUES (?, ?, ?, ?);";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $objeto->paciente_id,
@@ -62,7 +62,7 @@ class CitaDAO {
 
     // Actualizar una cita existente
     public function actualizar(Cita $objeto) {
-        $sql = "UPDATE B86781_citas SET paciente_id = ?, doctor_id = ?, fecha = ?, estado = ? WHERE id = ?;";
+        $sql = "UPDATE g2_citas SET paciente_id = ?, doctor_id = ?, fecha = ?, estado = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $objeto->paciente_id,
@@ -75,7 +75,7 @@ class CitaDAO {
 
     // Eliminar una cita
     public function eliminar($id) {
-        $sql = "DELETE FROM B86781_citas WHERE id = ?;";
+        $sql = "DELETE FROM g2_citas WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$id]);
     }

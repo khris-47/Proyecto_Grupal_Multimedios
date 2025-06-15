@@ -1,6 +1,6 @@
 <?php
 
-class HistorialUsuario {
+class HistorialMedicoUsuario {
     public $id;
     public $cita_id;
     public $descripcion;

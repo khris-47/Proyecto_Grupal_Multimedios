@@ -13,12 +13,12 @@ class RolDAO {
 
     // Obtener todos los roles
     public function obtenerTodos() {
-        $stmt = $this->pdo->query("SELECT * FROM B86781_rol;");
+        $stmt = $this->pdo->query("SELECT * FROM g2_rol;");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $resultado[] = new Rol(
-                $row['id'],
+                $row['id_rol'],
                 $row['nombre']
             );
         }
@@ -28,24 +28,23 @@ class RolDAO {
 
     // Insertar un nuevo rol
     public function insertar(Rol $objeto) {
-        $sql = "INSERT INTO B86781_rol (nombre) VALUES (?);";
+        $sql = "INSERT INTO g2_rol (nombre) VALUES (?);";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$objeto->nombre]);
     }
 
     // Actualizar un rol existente
     public function actualizar(Rol $objeto) {
-        $sql = "UPDATE B86781_rol SET nombre = ? WHERE id = ?;";
+        $sql = "UPDATE g2_rol SET nombre = ? WHERE id_rol = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$objeto->nombre, $objeto->id]);
     }
 
     // Eliminar un rol por ID
     public function eliminar($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM B86781_rol WHERE id = ?;");
+        $stmt = $this->pdo->prepare("DELETE FROM g2_rol WHERE id_rol = ?;");
         return $stmt->execute([$id]);
     }
 }
-
 
 ?>

@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../misc/Conexion.php';
-require_once __DIR__ . '/../model/Categoria.php';
+require_once __DIR__ . '/../model/Departamento.php';
 
-class CategoriasDAO {
+class DepartamentoDAO {
 
     private $pdo;
 
@@ -11,13 +11,13 @@ class CategoriasDAO {
         $this->pdo = Conexion::conectar();
     }
 
-    // Obtener todas las categorías
+    // Obtener todos los departamentos
     public function obtenerTodos() {
-        $stmt = $this->pdo->query("SELECT * FROM g2_categorias;");
+        $stmt = $this->pdo->query("SELECT * FROM g2_departamentos ORDER BY nombre;");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $resultado[] = new Categoria(
+            $resultado[] = new Departamento(
                 $row['id'],
                 $row['nombre']
             );
@@ -26,40 +26,42 @@ class CategoriasDAO {
         return $resultado;
     }
 
-    // Obtener categoría por ID
+    // Obtener departamento por ID
     public function obtenerPorId($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM g2_categorias WHERE id = ?;");
+        $stmt = $this->pdo->prepare("SELECT * FROM g2_departamentos WHERE id = ?;");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            return new Categoria($row['id'], $row['nombre']);
+            return new Departamento(
+                $row['id'],
+                $row['nombre']
+            );
         }
 
         return null;
     }
 
-    // Insertar nueva categoría
-    public function insertar(Categoria $objeto) {
-        $sql = "INSERT INTO g2_categorias (nombre) VALUES (?);";
+    // Insertar nuevo departamento
+    public function insertar(Departamento $objeto) {
+        $sql = "INSERT INTO g2_departamentos (nombre) VALUES (?);";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$objeto->nombre]);
     }
 
-    // Actualizar categoría
-    public function actualizar(Categoria $objeto) {
-        $sql = "UPDATE g2_categorias SET nombre = ? WHERE id = ?;";
+    // Actualizar departamento
+    public function actualizar(Departamento $objeto) {
+        $sql = "UPDATE g2_departamentos SET nombre = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$objeto->nombre, $objeto->id]);
     }
 
-    // Eliminar categoría
+    // Eliminar departamento
     public function eliminar($id) {
-        $sql = "DELETE FROM g2_categorias WHERE id = ?;";
+        $sql = "DELETE FROM g2_departamentos WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$id]);
     }
 }
-
 
 ?>
