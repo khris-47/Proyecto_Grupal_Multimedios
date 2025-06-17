@@ -1,43 +1,82 @@
 <?php
 
+// Requerimos el archivo que contiene el DAO (Data Access Object) para manejar la base de datos
 require_once __DIR__ . '/../accessData/HistorialMedicoUsuarioDAO.php';
+
+// Requerimos el modelo que representa un historial médico de usuario
 require_once __DIR__ . '/../model/HistorialMedicoUsuario.php';
 
+// Esta clase actúa como el "intermediario" entre la API y el DAO. Aquí va la lógica del negocio.
 class HistorialUsuarioController {
+
+    // Atributo privado que guarda la instancia del DAO (acceso a la base de datos)
     private $dao;
 
+    // Constructor: crea una nueva instancia del DAO cuando se inicializa este controlador
     public function __construct() {
-        $this->dao = new HistorialMedicoUsuarioDAO();  // nombre correcto del DAO
+        $this->dao = new HistorialMedicoUsuarioDAO(); // El DAO se conecta con la BD
     }
 
-    // Obtener todos los registros del historial
+    // Método que devuelve todos los historiales médicos almacenados
     public function obtenerTodos() {
         return $this->dao->obtenerTodos();
     }
 
-    // Obtener un historial específico por ID
+    // Método que busca y devuelve un historial médico específico por su ID
     public function obtenerPorId($id) {
         return $this->dao->obtenerPorId($id);
     }
 
-    // Insertar un nuevo historial
+    // Método para insertar un nuevo historial médico en la base de datos
     public function insertar($datos) {
+        // Validamos que no falten datos obligatorios
         if (empty($datos['cita_id']) || empty($datos['descripcion']) || empty($datos['observaciones']) || empty($datos['fecha'])) {
             throw new Exception("Faltan datos obligatorios.");
         }
 
+        // Creamos una nueva instancia del modelo con los datos recibidos (el ID es nulo porque se autogenera)
         $historial = new HistorialMedicoUsuario(
-            null, // id nulo para insertar
+            null, // El ID se asignará automáticamente en la base de datos
             $datos['cita_id'],
             $datos['descripcion'],
             $datos['observaciones'],
             $datos['fecha']
         );
 
+        // Llamamos al DAO para insertar el historial en la base de datos
         return $this->dao->insertar($historial);
     }
 
+    // ✏️ Método para actualizar un historial médico existente
+    public function actualizar($id, $datos) {
+        // Buscamos el historial por su ID para ver si existe
+        $historial = $this->dao->obtenerPorId($id);
+        if (!$historial) {
+            throw new Exception("Historial de usuario no encontrado.");
+        }
 
+        // Actualizamos solo los campos que fueron enviados (para no sobreescribir datos innecesariamente)
+        if (!empty($datos['cita_id'])) {
+            $historial->cita_id = $datos['cita_id'];
+        }
+        if (!empty($datos['descripcion'])) {
+            $historial->descripcion = $datos['descripcion'];
+        }
+        if (!empty($datos['observaciones'])) {
+            $historial->observaciones = $datos['observaciones'];
+        }
+        if (!empty($datos['fecha'])) {
+            $historial->fecha = $datos['fecha'];
+        }
+
+        // Enviamos el historial modificado al DAO para guardar los cambios en la base de datos
+        return $this->dao->actualizar($historial);
+    }
+
+    // 🗑️ Método para eliminar un historial médico por su ID
+    public function eliminar($id) {
+        return $this->dao->eliminar($id);
+    }
 }
 
 ?>
