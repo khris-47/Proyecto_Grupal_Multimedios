@@ -12,19 +12,19 @@ class DoctorController
         $this->dao = new DoctorDAO(); // Instancia del DAO
     }
 
-    // 🔍 Obtener todos los doctores
+    //  Obtener todos los doctores
     public function obtenerTodos()
     {
         return $this->dao->obtenerTodos();
     }
 
-    // 🔍 Obtener un doctor por ID
+    //  Obtener un doctor por ID
     public function obtenerPorId($id)
     {
         return $this->dao->obtenerPorId($id);
     }
 
-    // ➕ Insertar un nuevo doctor
+    // Insertar un nuevo doctor
     public function insertar($datos)
     {
         // Validación básica
@@ -53,8 +53,7 @@ class DoctorController
         return $this->dao->insertar($doctor);
     }
 
-
-    // ✏️ Actualizar un doctor existente
+    // Actualizar un doctor existente
     public function actualizar($id, $datos)
     {
         $doctor = $this->dao->obtenerPorId($id);
@@ -80,10 +79,14 @@ class DoctorController
         return $this->dao->actualizar($doctor);
     }
 
-
-    // 🗑️ Eliminar un doctor por ID
+    // Eliminar un doctor por ID
     public function eliminar($id)
     {
+        $doctor = $this->obtenerPorId($id);
+        if (!$doctor) {
+            throw new Exception("No existe un doctor con este id.");
+        }
+
         return $this->dao->eliminar($id);
     }
 }
