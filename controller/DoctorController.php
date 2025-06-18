@@ -89,6 +89,29 @@ class DoctorController
 
         return $this->dao->eliminar($id);
     }
+
+
+    // Método para autenticar un doctor
+    public function autenticar($email, $password)
+    {
+        // Obtener el doctor por su email
+        $doctor = $this->dao->obtenerPorEmail($email);
+
+        // Si no existe un doctor con ese correo, retornar null
+        if (!$doctor) {
+            return null;
+        }
+
+        // Verificar que la contraseña hasheada coincida
+        if (hash('sha256', $password) === $doctor->password) {
+            return $doctor;
+        }
+
+        // Si la contraseña no coincide
+        return null;
+    }
+
+
 }
 
 ?>
