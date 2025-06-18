@@ -17,9 +17,9 @@ class ApiDetalleFactura
 
         $metodo = $_SERVER['REQUEST_METHOD'];
 
-        try {
-            switch ($metodo) {
-                case 'GET':
+        switch ($metodo) {
+            case 'GET':
+                try {
                     if (isset($_GET['id'])) {
                         $id = intval($_GET['id']);
                         $detalle = $this->controller->obtenerPorId($id);
@@ -34,15 +34,25 @@ class ApiDetalleFactura
                         $detalles = $this->controller->obtenerTodos();
                         echo json_encode($detalles);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'POST':
-                    $inputJSON = file_get_contents('php://input');
-                    $datos = json_decode($inputJSON, true);
+            case 'POST':
+                try {
+                    $datos = json_decode(file_get_contents('php://input'), true);
 
                     if (!$datos) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Datos JSON inválidos']);
+                        exit;
+                    }
+
+                    if (!isset($datos['factura_id']) || !isset($datos['producto_id']) || !isset($datos['cantidad']) || !isset($datos['precio_unitario'])) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Faltan campos obligatorios: factura_id, producto_id, cantidad, precio_unitario']);
                         exit;
                     }
 
@@ -54,9 +64,14 @@ class ApiDetalleFactura
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al insertar el detalle de factura']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'PUT':
+            case 'PUT':
+                try {
                     $id = $_GET['id'] ?? null;
                     if (!$id) {
                         http_response_code(400);
@@ -64,12 +79,17 @@ class ApiDetalleFactura
                         exit;
                     }
 
-                    $inputJSON = file_get_contents('php://input');
-                    $datos = json_decode($inputJSON, true);
+                    $datos = json_decode(file_get_contents('php://input'), true);
 
                     if (!$datos) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Datos JSON inválidos para actualizar']);
+                        exit;
+                    }
+
+                    if (!isset($datos['cantidad']) && !isset($datos['precio_unitario'])) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Se requiere al menos cantidad o precio_unitario para actualizar']);
                         exit;
                     }
 
@@ -80,14 +100,20 @@ class ApiDetalleFactura
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al actualizar el detalle de factura']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'DELETE':
+            case 'DELETE':
+                try {
                     if (!isset($_GET['id'])) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Falta ID para eliminar']);
                         exit;
                     }
+
                     $id = intval($_GET['id']);
                     $resultado = $this->controller->eliminar($id);
                     if ($resultado) {
@@ -96,20 +122,19 @@ class ApiDetalleFactura
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al eliminar el detalle de factura']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                default:
-                    http_response_code(405);
-                    echo json_encode(['error' => 'Método no soportado']);
-                    break;
-            }
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            default:
+                http_response_code(405);
+                echo json_encode(['error' => 'Método no soportado']);
+                break;
         }
     }
 }
 
 $api = new ApiDetalleFactura();
 $api->manejarPeticiones();
-
