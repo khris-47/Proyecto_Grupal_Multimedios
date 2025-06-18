@@ -17,9 +17,9 @@ class ApiMedicamento
 
         $metodo = $_SERVER['REQUEST_METHOD'];
 
-        try {
-            switch ($metodo) {
-                case 'GET':
+        switch ($metodo) {
+            case 'GET':
+                try {
                     if (isset($_GET['id'])) {
                         $id = intval($_GET['id']);
                         $medicamento = $this->controller->obtenerPorId($id);
@@ -34,9 +34,14 @@ class ApiMedicamento
                         $medicamentos = $this->controller->obtenerTodos();
                         echo json_encode($medicamentos);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'POST':
+            case 'POST':
+                try {
                     $inputJSON = file_get_contents('php://input');
                     $datos = json_decode($inputJSON, true);
 
@@ -54,9 +59,14 @@ class ApiMedicamento
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al insertar el medicamento']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'PUT':
+            case 'PUT':
+                try {
                     $id = $_GET['id'] ?? null;
                     if (!$id) {
                         http_response_code(400);
@@ -80,14 +90,20 @@ class ApiMedicamento
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al actualizar el medicamento']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                case 'DELETE':
+            case 'DELETE':
+                try {
                     if (!isset($_GET['id'])) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Falta ID para eliminar']);
                         exit;
                     }
+
                     $id = intval($_GET['id']);
                     $resultado = $this->controller->eliminar($id);
                     if ($resultado) {
@@ -96,20 +112,19 @@ class ApiMedicamento
                         http_response_code(500);
                         echo json_encode(['error' => 'Error al eliminar el medicamento']);
                     }
-                    break;
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => $e->getMessage()]);
+                }
+                break;
 
-                default:
-                    http_response_code(405);
-                    echo json_encode(['error' => 'Método no soportado']);
-                    break;
-            }
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            default:
+                http_response_code(405);
+                echo json_encode(['error' => 'Método no soportado']);
+                break;
         }
     }
 }
 
 $api = new ApiMedicamento();
 $api->manejarPeticiones();
-
