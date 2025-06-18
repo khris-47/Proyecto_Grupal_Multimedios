@@ -76,42 +76,7 @@ class ApiHistorialUsuario {
                 }
                 break;
                 
-            // Caso para actualizar un historial existente
-            case 'PUT':
-                // Verificamos que se haya enviado el ID por la URL
-                $id = $_GET['id'] ?? null;
-                if (!$id) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Falta ID para actualizar']);
-                    exit;
-                }
-
-                // Leemos los nuevos datos enviados por el cliente
-                $inputJSON = file_get_contents('php://input');
-                $datos = json_decode($inputJSON, true);
-
-                // Validamos los datos
-                if (!$datos) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Datos JSON inválidos para actualizar']);
-                    exit;
-                }
-
-                try {
-                    // Intentamos actualizar el historial
-                    $resultado = $this->controller->actualizar($id, $datos);
-                    if ($resultado) {
-                        echo json_encode(['mensaje' => 'Historial de usuario actualizado correctamente']);
-                    } else {
-                        http_response_code(500);
-                        echo json_encode(['error' => 'Error al actualizar el historial de usuario']);
-                    }  
-                }  catch (Exception $e) {
-                    http_response_code(400);
-                    echo json_encode(['error' => $e->getMessage()]);
-                }
-                break;
-                    
+                
             // Caso para eliminar un historial existente
             case 'DELETE':
                 // Validamos que se haya enviado el ID

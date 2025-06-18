@@ -46,32 +46,8 @@ class HistorialUsuarioController {
         // Llamamos al DAO para insertar el historial en la base de datos
         return $this->dao->insertar($historial);
     }
+    
 
-    // ✏️ Método para actualizar un historial médico existente
-    public function actualizar($id, $datos) {
-        // Buscamos el historial por su ID para ver si existe
-        $historial = $this->dao->obtenerPorId($id);
-        if (!$historial) {
-            throw new Exception("Historial de usuario no encontrado.");
-        }
-
-        // Actualizamos solo los campos que fueron enviados (para no sobreescribir datos innecesariamente)
-        if (!empty($datos['cita_id'])) {
-            $historial->cita_id = $datos['cita_id'];
-        }
-        if (!empty($datos['descripcion'])) {
-            $historial->descripcion = $datos['descripcion'];
-        }
-        if (!empty($datos['observaciones'])) {
-            $historial->observaciones = $datos['observaciones'];
-        }
-        if (!empty($datos['fecha'])) {
-            $historial->fecha = $datos['fecha'];
-        }
-
-        // Enviamos el historial modificado al DAO para guardar los cambios en la base de datos
-        return $this->dao->actualizar($historial);
-    }
 
     // 🗑️ Método para eliminar un historial médico por su ID
     public function eliminar($id) {

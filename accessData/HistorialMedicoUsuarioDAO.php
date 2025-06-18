@@ -72,23 +72,7 @@ class HistorialMedicoUsuarioDAO {
         }
     }
 
-    // Actualizar detalle existente
-    public function actualizar(HistorialMedicoUsuario $objeto) {
-        try {
-            $sql = "UPDATE g2_historial_medico_usuario 
-                    SET cita_id = ?, descripcion = ?, observaciones = ? 
-                    WHERE id = ?;";
-            $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([
-                $objeto->id
-                $objeto->cita_id,
-                $objeto->descripcion,
-                $objeto->observaciones,
-            ]);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
+
 
     // Eliminar por id
     public function eliminar($id) {
