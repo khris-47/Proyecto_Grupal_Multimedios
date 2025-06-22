@@ -9,7 +9,9 @@ class Medicamento {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
+        
     }
+
 }
 
 ?>
