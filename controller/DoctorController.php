@@ -28,7 +28,7 @@ class DoctorController
     public function insertar($datos)
     {
         // Validación básica
-        $camposRequeridos = ['nombre', 'correo', 'telefono', 'email', 'password', 'id_rol', 'departamento_id'];
+        $camposRequeridos = ['nombre', 'telefono', 'email', 'password', 'id_rol', 'departamento_id'];
         foreach ($camposRequeridos as $campo) {
             if (empty($datos[$campo])) {
                 throw new Exception("Falta el campo obligatorio: $campo");
@@ -42,7 +42,6 @@ class DoctorController
         $doctor = new Doctor(
             null, // ID nulo para insertar (autoincremental)
             $datos['nombre'],
-            $datos['correo'],
             $datos['telefono'],
             $datos['email'],
             $passwordHasheada,
@@ -63,8 +62,6 @@ class DoctorController
 
         if (!empty($datos['nombre']))
             $doctor->nombre = $datos['nombre'];
-        if (!empty($datos['correo']))
-            $doctor->correo = $datos['correo'];
         if (!empty($datos['telefono']))
             $doctor->telefono = $datos['telefono'];
         if (!empty($datos['email']))
@@ -110,7 +107,6 @@ class DoctorController
         // Si la contraseña no coincide
         return null;
     }
-
 
 }
 

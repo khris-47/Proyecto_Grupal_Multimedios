@@ -1,5 +1,16 @@
 <?php
 
+// Permitir CORS para desarrollo
+header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Responder a la petición OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once __DIR__ . '/../controller/UsuariosController.php';
 header('Content-Type: application/json');
 
@@ -26,7 +37,8 @@ try {
                 'id' => $usuario->id,
                 'nombre' => $usuario->nombre,
                 'email' => $usuario->email,
-                'id_rol' => $usuario->id_rol
+                'id_rol' => $usuario->id_rol,
+                'cedula' => $usuario->cedula
             ]
         ]);
     } else {
