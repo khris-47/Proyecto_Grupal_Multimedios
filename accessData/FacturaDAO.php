@@ -19,9 +19,9 @@ class FacturaDAO {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $resultado[] = new Factura(
                 $row['id'],
-                $row['cita_id'],
                 $row['fecha'],
-                $row['total']
+                $row['total'],
+                $row['usuario_id']
             );
         }
 
@@ -37,9 +37,9 @@ class FacturaDAO {
         if ($row) {
             return new Factura(
                 $row['id'],
-                $row['cita_id'],
                 $row['fecha'],
-                $row['total']
+                $row['total'],
+                $row['usuario_id']
             );
         }
 
@@ -47,24 +47,29 @@ class FacturaDAO {
     }
 
     // Insertar nueva factura
-    public function insertar(Factura $objeto) {
-        $sql = "INSERT INTO g2_facturas (cita_id, fecha, total) VALUES (?, ?, ?);";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            $objeto->cita_id,
-            $objeto->fecha,
-            $objeto->total
-        ]);
+   public function insertar(Factura $objeto) {
+    $sql = "INSERT INTO g2_facturas (usuario_id, fecha, total) VALUES (?, ?, ?);";
+    $stmt = $this->pdo->prepare($sql);
+    $success = $stmt->execute([
+        $objeto->usuario_id,
+        $objeto->fecha,
+        $objeto->total
+    ]);
+    if ($success) {
+        return $this->pdo->lastInsertId();  // Devuelve el id insertado
     }
+    return false;
+}
+
 
     // Actualizar factura existente
     public function actualizar(Factura $objeto) {
-        $sql = "UPDATE g2_facturas SET cita_id = ?, fecha = ?, total = ? WHERE id = ?;";
+        $sql = "UPDATE g2_facturas SET  fecha = ?, total = ?, usuario_id = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
-            $objeto->cita_id,
             $objeto->fecha,
             $objeto->total,
+            $objeto->usuario_id,
             $objeto->id
         ]);
     }

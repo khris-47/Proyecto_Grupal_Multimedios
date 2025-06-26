@@ -2,15 +2,16 @@
 
 class Factura {
     public $id;
-    public $cita_id;
     public $fecha;
     public $total;
+    public $usuario_id;
 
-    public function __construct($id, $cita_id, $fecha, $total) {
+    public function __construct($id, $fecha, $total, $usuario_id) {
         $this->id = $id;
-        $this->cita_id = $cita_id;
         $this->fecha = $fecha;
         $this->total = $total;
+        $this->usuario_id = $usuario_id;
+
     }
 }
 
