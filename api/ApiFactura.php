@@ -52,39 +52,43 @@ class ApiFactura
                 }
                 break;
 
-            case 'POST':
-                try {
-                    $inputJSON = file_get_contents('php://input');
-                    $datos = json_decode($inputJSON, true);
+           case 'POST':
+    try {
+        $inputJSON = file_get_contents('php://input');
+        $datos = json_decode($inputJSON, true);
 
-                    if (!$datos || !isset($datos['usuario_id']) || !isset($datos['fecha']) || !isset($datos['total']) || !isset($datos['detalle'])) {
-                    http_response_code(400);
-                    echo json_encode(['error' => 'Datos incompletos para crear factura con detalle']);
-                    exit;
-                }
+        // Validar datos mínimos
+        if (
+            !$datos ||
+            !isset($datos['usuario_id']) ||
+            !isset($datos['fecha']) ||
+            !isset($datos['detalle']) ||
+            !is_array($datos['detalle']) ||
+            count($datos['detalle']) === 0
+        ) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Datos incompletos o formato inválido']);
+            exit;
+        }
 
-                $facturaDatos = [
-                    'usuario_id' => $datos['usuario_id'],
-                    'fecha' => $datos['fecha'],
-                    'total' => $datos['total']
-                ];
+        // Llamar al método para crear factura con detalle
+        $facturaId = $this->controller->crearFacturaConDetalle(
+            [
+                'usuario_id' => $datos['usuario_id'],
+                'fecha' => $datos['fecha']
+            ],
+            $datos['detalle']
+        );
 
-                $detalle = $datos['detalle'];  // array con detalle de medicamentos
+        http_response_code(201);
+        echo json_encode(['mensaje' => 'Factura creada correctamente', 'factura_id' => $facturaId]);
 
-                $facturaId = $this->controller->crearFacturaConDetalle($facturaDatos, $detalle);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    break;
 
-                    if ($facturaId) {
-                        http_response_code(201);
-                        echo json_encode(['mensaje' => 'Factura creada correctamente']);
-                    } else {
-                        http_response_code(500);
-                        echo json_encode(['error' => 'Error al insertar la factura']);
-                    }
-                } catch (Exception $e) {
-                    http_response_code(500);
-                    echo json_encode(['error' => $e->getMessage()]);
-                }
-                break;
 
             case 'PUT':
                 try {

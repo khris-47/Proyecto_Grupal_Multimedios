@@ -28,39 +28,51 @@ class FacturaController {
     }
 
     // ➕ Insertar una nueva factura
+public function crearFacturaConDetalle($datosFactura, $detalle) {
+    $total = 0;
 
-     public function crearFacturaConDetalle($datosFactura, $detalle) {
-        // 1. Validar stock suficiente para cada medicamento
-        foreach ($detalle as $item) {
-            $medicamento = $this->medicamentoDao->obtenerPorId($item['medicamento_id']);
-            if (!$medicamento) {
-                throw new Exception("Medicamento ID {$item['medicamento_id']} no encontrado");
-            }
-            if ($medicamento->cantidad < $item['cantidad']) {
-                throw new Exception("Stock insuficiente para medicamento ID {$item['medicamento_id']}");
-            }
+    // 1. Validar y calcular total
+    foreach ($detalle as &$item) {
+        $medicamento = $this->medicamentoDao->obtenerPorId($item['medicamento_id']);
+        if (!$medicamento) {
+            throw new Exception("Medicamento ID {$item['medicamento_id']} no encontrado");
+        }
+        if ($medicamento->cantidad < $item['cantidad']) {
+            throw new Exception("Stock insuficiente para medicamento ID {$item['medicamento_id']}");
         }
 
-        // 2. Insertar factura y obtener id
-        $factura = new Factura(null, $datosFactura['usuario_id'], $datosFactura['fecha'], $datosFactura['total']);
-        $facturaId = $this->dao->insertar($factura);
-        if (!$facturaId) {
-            throw new Exception("Error al insertar factura");
-        }
-
-        // 3. Insertar cada detalle y actualizar stock
-        foreach ($detalle as $item) {
-            $detalleFactura = new DetalleFactura(null, $facturaId, $item['medicamento_id'], $item['cantidad'], $item['precio_unitario']);
-            $this->detalleFacturaDao->insertar($detalleFactura);
-
-            // Actualizar stock
-            $medicamento = $this->medicamentoDao->obtenerPorId($item['medicamento_id']);
-            $medicamento->cantidad -= $item['cantidad'];
-            $this->medicamentoDao->actualizar($medicamento);
-        }
-
-        return $facturaId;
+        $item['precio_unitario'] = $medicamento->precio_unitario;
+        $total += $item['precio_unitario'] * $item['cantidad'];
     }
+
+    // 2. Insertar factura con total
+    $factura = new Factura(null, $datosFactura['fecha'], $total, $datosFactura['usuario_id']);
+    $facturaId = $this->dao->insertar($factura);
+    if (!$facturaId) {
+        throw new Exception("Error al insertar factura");
+    }
+
+    // 3. Insertar detalle y actualizar stock
+    foreach ($detalle as $item) {
+        $detalleFactura = new DetalleFactura(
+            null,
+            $facturaId,
+            $item['medicamento_id'],
+            $item['cantidad'],
+            $item['precio_unitario']
+        );
+        $this->detalleFacturaDao->insertar($detalleFactura);
+
+        // 4. Restar stock
+        $medicamento = $this->medicamentoDao->obtenerPorId($item['medicamento_id']);
+        $medicamento->cantidad -= $item['cantidad'];
+        $this->medicamentoDao->actualizar($medicamento);
+    }
+
+    return $facturaId;
+}
+
+
 
 
     // ✏️ Actualizar una factura existente
