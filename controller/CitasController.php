@@ -21,14 +21,26 @@ class CitasController {
     }
 
     // ➕ Insertar una nueva cita
-    public function insertar($datos) {
-        if (empty($datos['paciente_id']) || empty($datos['doctor_id']) || empty($datos['fecha'])) {
-            throw new Exception("Faltan datos obligatorios.");
-        }
+public function insertar($datos) {
+    // Log para depurar datos recibidos
+    error_log("Datos recibidos para insertar cita: " . print_r($datos, true));
 
-        $cita = new Cita(null, $datos['paciente_id'], $datos['doctor_id'], $datos['fecha'], $datos['estado'] ?? 'en espera');
-        return $this->dao->insertar($cita);
+    if (empty($datos['paciente_id']) || empty($datos['doctor_id']) || empty($datos['fecha'])) {
+        error_log("Faltan datos obligatorios: " . print_r($datos, true));
+        throw new Exception("Faltan datos obligatorios.");
     }
+
+    $cita = new Cita(null, $datos['paciente_id'], $datos['doctor_id'], $datos['fecha'], $datos['estado'] ?? 'en espera');
+
+    $resultado = $this->dao->insertar($cita);
+
+    if (!$resultado) {
+        error_log("Error al insertar la cita en DAO");
+    }
+
+    return $resultado;
+}
+
 
     // ✏️ Actualizar una cita existente
     public function actualizar($id, $datos) {
