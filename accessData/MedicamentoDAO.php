@@ -50,7 +50,7 @@ class MedicamentoDAO {
 
     // Insertar nuevo medicamento
     public function insertar(Medicamento $objeto) {
-        $sql = "INSERT INTO g2_medicamentos (nombre, descripcion, cantidad, precio_unitario) VALUES (?, ?);";
+        $sql = "INSERT INTO g2_medicamentos (nombre, descripcion, cantidad, precio_unitario) VALUES (?, ?, ?, ?);";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $objeto->nombre,

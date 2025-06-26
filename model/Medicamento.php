@@ -5,7 +5,7 @@ class Medicamento {
     public $nombre;
     public $descripcion;
     public $cantidad;
-    public $precio_unitario
+    public $precio_unitario;
 
     public function __construct($id, $nombre, $descripcion, $cantidad, $precio_unitario) {
         $this->id = $id;

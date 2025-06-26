@@ -5,7 +5,7 @@ require_once __DIR__ . '/../model/Factura.php';
 
 class FacturaDAO {
 
-    private $pdo;
+    public $pdo;
 
     public function __construct() {
         $this->pdo = Conexion::conectar();
