@@ -20,7 +20,9 @@ class MedicamentoDAO {
             $resultado[] = new Medicamento(
                 $row['id'],
                 $row['nombre'],
-                $row['descripcion']
+                $row['descripcion'],
+                $row['cantidad'],
+                $row['precio_unitario']
             );
         }
 
@@ -37,7 +39,9 @@ class MedicamentoDAO {
             return new Medicamento(
                 $row['id'],
                 $row['nombre'],
-                $row['descripcion']
+                $row['descripcion'],
+                $row['cantidad'],
+                $row['precio_unitario']
             );
         }
 
@@ -46,21 +50,25 @@ class MedicamentoDAO {
 
     // Insertar nuevo medicamento
     public function insertar(Medicamento $objeto) {
-        $sql = "INSERT INTO g2_medicamentos (nombre, descripcion) VALUES (?, ?);";
+        $sql = "INSERT INTO g2_medicamentos (nombre, descripcion, cantidad, precio_unitario) VALUES (?, ?);";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $objeto->nombre,
-            $objeto->descripcion
+            $objeto->descripcion,
+            $objeto->cantidad,
+            $objeto->precio_unitario
         ]);
     }
 
     // Actualizar medicamento existente
     public function actualizar(Medicamento $objeto) {
-        $sql = "UPDATE g2_medicamentos SET nombre = ?, descripcion = ? WHERE id = ?;";
+        $sql = "UPDATE g2_medicamentos SET nombre = ?, descripcion = ?, cantidad = ?, precio_unitario = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             $objeto->nombre,
             $objeto->descripcion,
+            $objeto->cantidad,
+            $objeto->precio_unitario,
             $objeto->id
         ]);
     }

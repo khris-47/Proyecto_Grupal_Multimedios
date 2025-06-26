@@ -22,14 +22,16 @@ class MedicamentoController {
 
     // ➕ Insertar un nuevo medicamento
     public function insertar($datos) {
-        if (empty($datos['nombre']) || empty($datos['descripcion'])) {
+        if (empty($datos['nombre']) || empty($datos['descripcion']) ||empty($datos['cantidad']) ||empty($datos['precio_unitario']) ) {
             throw new Exception("Faltan datos obligatorios.");
         }
 
         $medicamento = new Medicamento(
             null,
             $datos['nombre'],
-            $datos['descripcion']
+            $datos['descripcion'],
+            $datos['cantidad'],
+            $datos['precio_unitario']
         );
 
         return $this->dao->insertar($medicamento);
@@ -47,6 +49,13 @@ class MedicamentoController {
         }
         if (!empty($datos['descripcion'])) {
             $medicamento->descripcion = $datos['descripcion'];
+        }
+
+        if (!empty($datos['cantidad'])) {
+            $medicamento->cantidad = $datos['cantidad'];
+        }
+        if (!empty($datos['precio_unitario'])) {
+            $medicamento->precio_unitario = $datos['precio_unitario'];
         }
 
         return $this->dao->actualizar($medicamento);

@@ -57,14 +57,23 @@ class ApiFactura
                     $inputJSON = file_get_contents('php://input');
                     $datos = json_decode($inputJSON, true);
 
-                    if (!$datos) {
-                        http_response_code(400);
-                        echo json_encode(['error' => 'Datos JSON inválidos']);
-                        exit;
-                    }
+                    if (!$datos || !isset($datos['usuario_id']) || !isset($datos['fecha']) || !isset($datos['total']) || !isset($datos['detalle'])) {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'Datos incompletos para crear factura con detalle']);
+                    exit;
+                }
 
-                    $resultado = $this->controller->insertar($datos);
-                    if ($resultado) {
+                $facturaDatos = [
+                    'usuario_id' => $datos['usuario_id'],
+                    'fecha' => $datos['fecha'],
+                    'total' => $datos['total']
+                ];
+
+                $detalle = $datos['detalle'];  // array con detalle de medicamentos
+
+                $facturaId = $this->controller->crearFacturaConDetalle($facturaDatos, $detalle);
+
+                    if ($facturaId) {
                         http_response_code(201);
                         echo json_encode(['mensaje' => 'Factura creada correctamente']);
                     } else {
