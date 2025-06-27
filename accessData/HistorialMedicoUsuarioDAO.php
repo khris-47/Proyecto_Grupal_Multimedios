@@ -11,15 +11,51 @@ class HistorialMedicoUsuarioDAO {
         $this->pdo = Conexion::conectar();
     }
 
-    // Obtener todos los registros
+    public function getPDO() {
+        return $this->pdo;
+    }
+    
+    // Obtener historiales por paciente_id
+public function obtenerPorPaciente($paciente_id) {
+    try {
+        $sql = "SELECT h.*, c.paciente_id 
+                FROM g2_historial_medico_usuario h
+                JOIN g2_citas c ON h.cita_id = c.id
+                WHERE c.paciente_id = ?;";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$paciente_id]);
+
+        $resultado = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $resultado[] = new HistorialMedicoUsuario(
+                $row['id'],
+                $row['paciente_id'],
+                $row['cita_id'],
+                $row['descripcion'],
+                $row['observaciones'],
+                $row['fecha']
+            );
+        }
+
+        return $resultado;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+    // Obtener todos los registros con paciente_id desde la tabla de citas
     public function obtenerTodos() {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM g2_historial_medico_usuario;");
+            $stmt = $this->pdo->query("SELECT h.*, c.paciente_id 
+                                       FROM g2_historial_medico_usuario h
+                                       JOIN g2_citas c ON h.cita_id = c.id;");
+
             $resultado = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $resultado[] = new HistorialMedicoUsuario(
                     $row['id'],
+                    $row['paciente_id'],
                     $row['cita_id'],
                     $row['descripcion'],
                     $row['observaciones'],
@@ -29,14 +65,17 @@ class HistorialMedicoUsuarioDAO {
 
             return $resultado;
         } catch (PDOException $e) {
-            return []; // se puede cambiar por null como los demás
+            return [];
         }
     }
 
     // Obtener uno por ID
     public function obtenerPorId($id) {
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM g2_historial_medico_usuario WHERE id = ?;");
+            $stmt = $this->pdo->prepare("SELECT h.*, c.paciente_id 
+                                         FROM g2_historial_medico_usuario h
+                                         JOIN g2_citas c ON h.cita_id = c.id
+                                         WHERE h.id = ?;");
             $stmt->execute([$id]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -44,6 +83,7 @@ class HistorialMedicoUsuarioDAO {
             if ($row) {
                 return new HistorialMedicoUsuario(
                     $row['id'],
+                    $row['paciente_id'],
                     $row['cita_id'],
                     $row['descripcion'],
                     $row['observaciones'],
@@ -57,22 +97,21 @@ class HistorialMedicoUsuarioDAO {
         }
     }
 
-    // Insertar nuevo registro
+    // Insertar nuevo registro (paciente_id no se guarda porque se obtiene desde la cita)
     public function insertar(HistorialMedicoUsuario $objeto) {
         try {
-            $sql = "INSERT INTO g2_historial_medico_usuario (cita_id, descripcion, observaciones) VALUES (?, ?, ?);";
+            $sql = "INSERT INTO g2_historial_medico_usuario (cita_id, descripcion, observaciones, fecha) VALUES (?, ?, ?, ?);";
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([
                 $objeto->cita_id,
                 $objeto->descripcion,
-                $objeto->observaciones
+                $objeto->observaciones,
+                $objeto->fecha
             ]);
         } catch (PDOException $e) {
             return false;
         }
     }
-
-
 
     // Eliminar por id
     public function eliminar($id) {
