@@ -33,7 +33,7 @@ class CategoriaDoctorController {
             throw new Exception("El doctor con ID {$datos['doctor_id']} no existe.");
         }
 
-        $categoriaDAO = new CategoriaDAO();
+        $categoriaDAO = new CategoriasDAO();
         if (!$categoriaDAO->obtenerPorId($datos['categoria_id'])) {
             throw new Exception("La categoría con ID {$datos['categoria_id']} no existe.");
         }
@@ -69,6 +69,8 @@ class CategoriaDoctorController {
 
         return $this->dao->eliminar($id);
     }
+
+    
 
 }
 

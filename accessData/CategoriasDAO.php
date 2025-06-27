@@ -3,23 +3,28 @@
 require_once __DIR__ . '/../misc/Conexion.php';
 require_once __DIR__ . '/../model/Categoria.php';
 
-class CategoriasDAO {
+class CategoriasDAO
+{
 
     private $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Conexion::conectar();
     }
 
     // Obtener todas las categorías
-    public function obtenerTodos() {
-        $stmt = $this->pdo->query("SELECT * FROM g2_categorias;");
+    public function obtenerTodos()
+    {
+        // Ejemplo: obtener solo activas
+        $stmt = $this->pdo->query("SELECT * FROM g2_categorias WHERE estado = 'activo';");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $resultado[] = new Categoria(
                 $row['id'],
-                $row['nombre']
+                $row['nombre'],
+                $row['estado']
             );
         }
 
@@ -27,35 +32,39 @@ class CategoriasDAO {
     }
 
     // Obtener categoría por ID
-    public function obtenerPorId($id) {
+    public function obtenerPorId($id)
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM g2_categorias WHERE id = ?;");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            return new Categoria($row['id'], $row['nombre']);
+            return new Categoria($row['id'], $row['nombre'], $row['estado']);
         }
 
         return null;
     }
 
     // Insertar nueva categoría
-    public function insertar(Categoria $objeto) {
-        $sql = "INSERT INTO g2_categorias (nombre) VALUES (?);";
+    public function insertar(Categoria $objeto)
+    {
+        $sql = "INSERT INTO g2_categorias (nombre, estado) VALUES (?, ?);";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$objeto->nombre]);
+        return $stmt->execute([$objeto->nombre, $objeto->estado ?? 'activo']);
     }
 
-    // Actualizar categoría
-    public function actualizar(Categoria $objeto) {
-        $sql = "UPDATE g2_categorias SET nombre = ? WHERE id = ?;";
+    // Actualizar con estado
+    public function actualizar(Categoria $objeto)
+    {
+        $sql = "UPDATE g2_categorias SET nombre = ?, estado = ? WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$objeto->nombre, $objeto->id]);
+        return $stmt->execute([$objeto->nombre, $objeto->estado, $objeto->id]);
     }
 
-    // Eliminar categoría
-    public function eliminar($id) {
-        $sql = "DELETE FROM g2_categorias WHERE id = ?;";
+    // Eliminar lógico (cambiar estado a inactivo)
+    public function eliminar($id)
+    {
+        $sql = "UPDATE g2_categorias SET estado = 'inactivo' WHERE id = ?;";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$id]);
     }

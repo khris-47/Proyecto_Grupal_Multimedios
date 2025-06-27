@@ -1,33 +1,29 @@
 <?php
 
-require_once __DIR__ . '/../accessData/DoctorDAO.php'; // Incluye el DAO de doctores
-require_once __DIR__ . '/../model/Doctor.php';  // Incluye el modelo Doctor
+require_once __DIR__ . '/../accessData/DoctorDAO.php';
+require_once __DIR__ . '/../model/Doctor.php';
 
 class DoctorController
 {
-    private $dao; // Propiedad para acceder al DAO
+    private $dao;
 
     public function __construct()
     {
-        $this->dao = new DoctorDAO(); // Instancia del DAO
+        $this->dao = new DoctorDAO();
     }
 
-    //  Obtener todos los doctores
     public function obtenerTodos()
     {
         return $this->dao->obtenerTodos();
     }
 
-    //  Obtener un doctor por ID
     public function obtenerPorId($id)
     {
         return $this->dao->obtenerPorId($id);
     }
 
-    // Insertar un nuevo doctor
     public function insertar($datos)
     {
-        // Validación básica
         $camposRequeridos = ['nombre', 'telefono', 'email', 'password', 'id_rol', 'departamento_id'];
         foreach ($camposRequeridos as $campo) {
             if (empty($datos[$campo])) {
@@ -35,24 +31,28 @@ class DoctorController
             }
         }
 
-        // Hashear la contraseña antes de guardar
         $passwordHasheada = hash('sha256', $datos['password']);
 
-        // Crear instancia de Doctor con todos los campos
+        $estado = isset($datos['estado']) ? $datos['estado'] : 'activo';
+        $categorias = isset($datos['categorias']) ? $datos['categorias'] : [];
+
         $doctor = new Doctor(
-            null, // ID nulo para insertar (autoincremental)
+            null,
             $datos['nombre'],
             $datos['telefono'],
             $datos['email'],
             $passwordHasheada,
             $datos['id_rol'],
-            $datos['departamento_id']
+            $datos['departamento_id'],
+            $estado
         );
+
+        // Asignar categorías al objeto Doctor
+        $doctor->categorias = $categorias;
 
         return $this->dao->insertar($doctor);
     }
 
-    // Actualizar un doctor existente
     public function actualizar($id, $datos)
     {
         $doctor = $this->dao->obtenerPorId($id);
@@ -72,11 +72,12 @@ class DoctorController
             $doctor->id_rol = $datos['id_rol'];
         if (isset($datos['departamento_id']))
             $doctor->departamento_id = $datos['departamento_id'];
+        if (isset($datos['estado']))
+            $doctor->estado = $datos['estado'];
 
         return $this->dao->actualizar($doctor);
     }
 
-    // Eliminar un doctor por ID
     public function eliminar($id)
     {
         $doctor = $this->obtenerPorId($id);
@@ -87,27 +88,28 @@ class DoctorController
         return $this->dao->eliminar($id);
     }
 
-
-    // Método para autenticar un doctor
     public function autenticar($email, $password)
     {
-        // Obtener el doctor por su email
         $doctor = $this->dao->obtenerPorEmail($email);
 
-        // Si no existe un doctor con ese correo, retornar null
         if (!$doctor) {
             return null;
         }
 
-        // Verificar que la contraseña hasheada coincida
         if (hash('sha256', $password) === $doctor->password) {
             return $doctor;
         }
 
-        // Si la contraseña no coincide
         return null;
     }
 
-}
+    public function obtenerCategoriasPorDoctorId($doctorId)
+    {
+        return $this->dao->obtenerCategoriasPorDoctorId($doctorId);
+    }
+    public function obtenerTodosConCategorias()
+    {
+        return $this->dao->obtenerTodosConCategorias();
+    }
 
-?>
+}

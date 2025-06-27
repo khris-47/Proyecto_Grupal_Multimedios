@@ -1,7 +1,7 @@
 <?php
 
 // Permitir CORS para desarrollo
-header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, DELETE, PUT,  OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
@@ -32,28 +32,36 @@ class ApiDoctores
         switch ($metodo) {
             case 'GET':
                 if (isset($_GET['id'])) {
-                    $id = intval($_GET['id']); // Sanitizar el ID
+                    $id = intval($_GET['id']);
                     $doctor = $this->controller->obtenerPorId($id);
-
                     if ($doctor) {
+                        // También aquí puedes agregar categorías si quieres
+                        $doctor->categorias = $this->controller->obtenerCategoriasPorDoctorId($id);
                         echo json_encode($doctor);
                     } else {
                         http_response_code(404);
                         echo json_encode(['error' => 'Doctor no encontrado']);
                     }
                 } else {
-                    $doctores = $this->controller->obtenerTodos();
+                    $doctores = $this->controller->obtenerTodosConCategorias();
                     echo json_encode($doctores);
                 }
                 break;
 
+
             case 'POST':
                 // Leer JSON desde el cuerpo de la solicitud
-                $datos = json_decode(file_get_contents('php://input'), true);
+                $rawInput = file_get_contents('php://input');
+                error_log("RAW INPUT: " . $rawInput);
+                $datos = json_decode($rawInput, true);
 
-                if (!$datos) {
+                if (json_last_error() !== JSON_ERROR_NONE) {
                     http_response_code(400);
-                    echo json_encode(['error' => 'Datos JSON inválidos']);
+                    echo json_encode([
+                        'error' => 'Datos JSON inválidos',
+                        'mensaje' => json_last_error_msg(),
+                        'raw' => $rawInput
+                    ]);
                     exit;
                 }
 
