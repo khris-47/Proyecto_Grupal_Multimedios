@@ -17,7 +17,7 @@ class CategoriasDAO
     public function obtenerTodos()
     {
         // Ejemplo: obtener solo activas
-        $stmt = $this->pdo->query("SELECT * FROM g2_categorias WHERE estado = 'activo';");
+        $stmt = $this->pdo->query("SELECT * FROM g2_categorias");
         $resultado = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

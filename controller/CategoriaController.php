@@ -43,15 +43,16 @@ class CategoriasController
             throw new Exception("Categoría no encontrada.");
         }
 
-        if (!empty($datos['nombre'])) {
-            $categoria->nombre = $datos['nombre'];
-        }
+        // Mantener el nombre anterior si no se envía uno nuevo
+        $categoria->nombre = $datos['nombre'] ?? $categoria->nombre;
+
         if (isset($datos['estado'])) {
             $categoria->estado = $datos['estado'];
         }
 
         return $this->dao->actualizar($categoria);
     }
+
 
     // 🗑️ Eliminar una categoría por ID
     public function eliminar($id)

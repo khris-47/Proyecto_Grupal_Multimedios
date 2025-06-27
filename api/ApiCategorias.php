@@ -68,7 +68,6 @@ class ApiCategorias
                 break;
 
             case 'PUT':
-                parse_str(file_get_contents('php://input'), $put_vars);
                 $datos = json_decode(file_get_contents('php://input'), true);
 
                 $id = $_GET['id'] ?? ($datos['id'] ?? null);
